@@ -1,26 +1,26 @@
 #!/bin/bash
-# Centreon + engine install script for Debian Wheezy
-# Source https://github.com/zeysh/centreon-install
+# Centreon + nagios3 install script for Debian Wheezy
+# Original Source https://github.com/zeysh/centreon-install
 # Thanks to Eric http://eric.coquard.free.fr
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-CLIB_VER="1.4.2"
-CONNECTOR_VER="1.1.1"
-ENGINE_VER="1.4.8"
+#CLIB_VER="1.4.2"
+#CONNECTOR_VER="1.1.1"
+#ENGINE_VER="1.4.8"
 PLUGIN_VER="2.0.3"
-BROKER_VER="2.7.0"
+#BROKER_VER="2.7.0"
 CENTREON_VER="2.5.4"
 CLAPI_VER="1.6.1"
 # MariaDB Series
 MARIADB_VER='5.5'
 ## Sources URL
-CLIB_URL="http://download.centreon.com/index.php?id=4600"
-CONNECTOR_URL="http://download.centreon.com/index.php?id=4601"
-ENGINE_URL="http://download.centreon.com/index.php?id=4599"
+#CLIB_URL="http://download.centreon.com/index.php?id=4600"
+#CONNECTOR_URL="http://download.centreon.com/index.php?id=4601"
+#ENGINE_URL="http://download.centreon.com/index.php?id=4599"
 PLUGIN_URL="http://www.nagios-plugins.org/download/nagios-plugins-${PLUGIN_VER}.tar.gz"
-BROKER_URL="http://download.centreon.com/index.php?id=4608"
+#BROKER_URL="http://download.centreon.com/index.php?id=4608"
 CENTREON_URL="http://download.centreon.com/index.php?id=4607"
 CLAPI_URL="http://download.centreon.com/index.php?id=4596"
 ## Sources widgets
@@ -43,10 +43,10 @@ INSTALL_LOG="/usr/local/src/centreon-install.log"
 ## Set mysql-server root password
 MYSQL_PASSWORD="password"
 ## Users and groups
-ENGINE_USER="centreon-engine"
-ENGINE_GROUP="centreon-engine"
-BROKER_USER="centreon-broker"
-BROKER_GROUP="centreon-broker"
+ENGINE_USER="nagios"
+ENGINE_GROUP="nagios"
+BROKER_USER="nagios"
+BROKER_GROUP="nagios"
 CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
@@ -508,9 +508,9 @@ echo '[mysqld]
 innodb_file_per_table=1' > /etc/mysql/conf.d/innodb.cnf
 
 service mysql restart
-service cbd restart
+#service cbd restart
 service centcore restart
-service centengine restart
+#service centengine restart
 service centreontrapd restart
 
 ## Workarounds
@@ -577,7 +577,21 @@ chown -R ${ENGINE_USER}:${ENGINE_GROUP} ${DL_DIR}/centreon-plugins
 cp -R * ${INSTALL_DIR}/centreon-plugins/libexec/
 }
 
+function nagios_install () {
+echo "
+======================================================================
 
+                     Install Nagios 3
+
+======================================================================
+"
+
+apt-get install --force-yes -y nagios3 nagios-nrpe-plugin nagios-plugins ndoutils-nagios3-mysql
+
+# Cleanup to prevent space full on /var
+apt-get clean
+
+}
 
 
 
@@ -614,13 +628,13 @@ if [[ $? -ne 0 ]];
   else
     echo -e "${bold}Step2${normal}  => Install PHP5.3 on Wheezy                              ${STATUS_OK}"
 fi
-clib_install >> ${INSTALL_LOG} 2>&1
-if [[ $? -ne 0 ]];
-  then
-    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_FAIL}"
-  else
-    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_OK}"
-fi
+#clib_install >> ${INSTALL_LOG} 2>&1
+#if [[ $? -ne 0 ]];
+#  then
+#    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_FAIL}"
+#  else
+#    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_OK}"
+#fi
 centreon_connectors_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
@@ -628,12 +642,19 @@ if [[ $? -ne 0 ]];
   else
     echo -e "${bold}Step4${normal}  => Centreon Perl and SSH connectors install              ${STATUS_OK}"
 fi
-centreon_engine_install >> ${INSTALL_LOG} 2>&1
+#centreon_engine_install >> ${INSTALL_LOG} 2>&1
+#if [[ $? -ne 0 ]];
+#  then
+#    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_FAIL}"
+#  else
+#    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_OK}"
+#fi
+nagios_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_FAIL}"
+    echo -e "${bold}Step6${normal}  => Nagios 3 install                                ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_OK}"
+    echo -e "${bold}Step6${normal}  => Nagios 3 install                                ${STATUS_OK}"
 fi
 nagios_plugin_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
@@ -649,13 +670,13 @@ if [[ $? -ne 0 ]];
   else
     echo -e "${bold}Step6${normal}  => Centreon plugins install                              ${STATUS_OK}"
 fi
-centreon_broker_install >> ${INSTALL_LOG} 2>&1
-if [[ $? -ne 0 ]];
-  then
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
-  else
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_OK}"
-fi
+#centreon_broker_install >> ${INSTALL_LOG} 2>&1
+#if [[ $? -ne 0 ]];
+#  then
+#    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
+#  else
+#    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_OK}"
+#fi
 create_centreon_tmpl >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
