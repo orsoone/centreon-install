@@ -1,7 +1,7 @@
 centreon-install
 ================
 
-Centreon autoinstall for Debian (with centreon-engine)
+Centreon autoinstall for Debian (with nagios3 and ndoutils)
 
 Tested on Debian Wheezy
 
@@ -22,10 +22,10 @@ Tested on Debian Wheezy
 == Users, groups and passwords
 
 - MYSQL_PASSWORD="password"
-- ENGINE_USER="centreon-engine"
-- ENGINE_GROUP="centreon-engine"
-- BROKER_USER="centreon-broker"
-- BROKER_GROUP="centreon-broker"
+- ENGINE_USER="nagios"
+- ENGINE_GROUP="nagios"
+- BROKER_USER="nagios"
+- BROKER_GROUP="nagios"
 - CENTREON_USER="centreon"
 - CENTREON_GROUP="centreon"
 
@@ -42,19 +42,16 @@ http://localhost/centreon/
 == Complete the web wizard install
 
 |===
-| Monitoring engine                        | centreon-engine
-| Centreon Engine directory                | /usr/local/centreon-engine
-| Centreon Engine Stats binary             | /usr/local/centreon-engine/bin/centenginestats
-| Centreon Engine var lib directory        | /var/lib/centreon-engine
-| Centreon Engine Connector path           | /usr/local/centreon-connector
-| Centreon Engine Library (*.so) directory | /usr/local/centreon-engine/lib/centreon-engine/
-| Embedded Perl initialisation file        |
+| Monitoring engine                        | nagios
+| Nagios directory                         | /usr/share/nagios
+| Nagiostats binary                        | /usr/sbin/nagios3
+| Nagios image directory                   | /usr/share/nagios3/htdocs
 |===
 
 == Broker Module Information
 
 |===
-|Broker Module                        | centreon-broker
+|Broker Module                        | ndoutils
 |Centreon Broker etc directory        | /usr/local/centreon-broker/etc
 |Centreon Broker module (cbmod.so)    | /usr/local/centreon-broker/lib/cbmod.so
 |Centreon Broker log directory        | /var/log/centreon-broker/
